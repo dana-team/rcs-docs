@@ -2,17 +2,44 @@
 The documentation in this page explains how to setup Capp and RCS in your cluster.
 
 ## Setup Capp
-1. Clone the [repo](https://github.com/dana-team/container-app-operator)
-2. Run `make prereq`
-3. Run `make deploy IMG=danateam/container-app-operator:<IMG_TAG>` where IMG_TAG is the version you wish to use.
+After cloning the [repo](https://github.com/dana-team/container-app-operator), run the following commands:
+```
+make prereq
+#replace <IMG_TAG> with the version you wish to use
+make deploy IMG=danateam/container-app-operator:<IMG_TAG>
+```
+The `make prereq` directive installs the capp CRD, installs `knative serving`, and helm in order to install the `logging-operator`.
 
 ## Setup RCS
-1. Clone the [repo](https://github.com/dana-team/rcs-ocm-deployer)
-2. Install clusteradm cli
-3. Run `clusteradm init --wait`
-4. Use the following command in order to obtain the token for the managed clusters: `joincmd=$(clusteradm get token --context ${hubctx} | grep clusteradm)`
-5. Run `make install deploy IMG=danateam/rcs-ocm-deployer:<IMG_TAG>`
-6. Add the managed clusters using this command `$(echo ${joincmd} --force-internal-endpoint-lookup --wait --context <your_context> | sed "s/<cluster_name>/<<your_cluster_name>>/g")`
-7. Accept the managed clusters into your hub using this command `clusteradm accept --context <hub_context> --clusters [cluster_names] --wait`
+### Manual Installation
+After cloning the [repo](https://github.com/dana-team/rcs-ocm-deployer), cloning [OCM](git clone https://github.com/open-cluster-management-io/OCM) and [capp](https://github.com/dana-team/container-app-operator) and downloading the [clusteradm](https://github.com/open-cluster-management-io/clusteradm) cli, run the follwing commands:
+```
+# Running the OCM script to create 1 hub Kind cluster and 2 managed clusters
+./OCM/solutions/setup-dev-environment/local-up.sh
+# Install capp crd to hub cluster
+kubectl config use-context kind-hub
+make -C container-app-operator install
+
+# Deploy capp to managed clusters
+kubectl config use-context kind-cluster1
+make -C container-app-operator/ prereq
+make -C container-app-operator deploy IMG=danateam/container-app-operator:<IMG_TAG>
+kubectl config use-context kind-cluster2
+make -C container-app-operator/ prereq
+make -C container-app-operator deploy IMG=danateam/container-app-operator:<IMG_TAG>
+
+# Cleanup
+rm -rf OCM
+rm -rf container-app-operator
+
+```
+
+### Using the rcs-quickstart script
+Install [clusteradm](https://github.com/open-cluster-management-io/clusteradm) and clone the [rcs-ocm-deployer](https://github.com/dana-team/rcs-ocm-deployer) repo, and run:
+```
+make quickstart
+```
+This Makefile directive uses the solutions/rcs-quickstart.sh script found and repo, and it creates a kind hub cluster and 2 managed kind clusters with OCM and RCS installed.
+
 
 
