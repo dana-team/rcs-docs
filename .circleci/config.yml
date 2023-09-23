@@ -1,4 +1,3 @@
-
 version: 2.1
 
 orbs:
@@ -15,13 +14,11 @@ jobs:
           name: build-doc-static
           command: mkdocs build
       - run:
-          name: build-docker-image
-          command: docker build . -t="docs-image"
-      - run:
           name: push-docker-image
           command: |
-            docker tag docs-image ${DOCKER_REGISTRY_PATH}
-            docker push ${DOCKER_REGISTRY_PATH}
+             docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD;
+             docker build . --tag=$DOCKER_USERNAME/rcs-docs:$CIRCLE_BRANCH; 
+             docker push $DOCKER_USERNAME/rcs-docs:$CIRCLE_BRANCH;
 workflows:
   sample: 
     jobs:
