@@ -1,10 +1,18 @@
 site_name: RCS Docs
 nav:
-    - Home: '../'
-    - Concepts: '/concepts/'
-    - 'Tutorial': '/tutorial/'
-    - 'API': '/API/'
-    - 'Blog': '/blog/'
+    - Home: 'index.md'
+    - Concepts: 
+      - Motivations: concepts/motivations.md
+      - Architecture: concepts/architecture.md
+      - Health: concepts/capp-health.md
+    - Defaults:
+      - Autoscale: defaults/autoscale-defaults.md
+      - Config: defaults/config-defaults.md
+      - GC: defaults/gc-defaults.md
+    - How To:
+      - Set Up: how-to/setup.md
+      - Autoscaling: how-to/autoscalding.md
+    - Contribute: 'contribute.md'
 
 theme:
   features:
